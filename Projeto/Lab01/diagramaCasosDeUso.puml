@@ -1,0 +1,98 @@
+@startuml Sistema de Matrículas - Caso de Uso
+!theme plain
+skinparam actorStyle awesome
+skinparam usecase {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    ArrowColor DarkBlue
+}
+
+title Sistema de Matrículas Universitário - Diagrama de Caso de Uso
+
+' Definição dos Atores
+actor "Secretaria da Universidade" as Secretaria
+actor "Aluno" as Aluno
+actor "Professor" as Professor
+actor "Sistema de Cobranças" as Cobrancas
+
+' Definição dos Casos de Uso
+rectangle "Sistema de Matrículas" {
+    
+    ' Casos de Uso da Secretaria
+    usecase "Gerenciar Cursos" as UC1
+    usecase "Gerenciar Disciplinas" as UC2
+    usecase "Gerenciar Alunos" as UC3
+    usecase "Gerenciar Professores" as UC4
+    usecase "Definir Período de Matrículas" as UC5
+    usecase "Gerar Currículo do Semestre" as UC6
+    usecase "Ativar/Desativar Disciplinas" as UC7
+    
+    ' Casos de Uso de Login
+    usecase "Fazer Login" as UC8
+    
+    ' Casos de Uso do Aluno
+    usecase "Visualizar Disciplinas Disponíveis" as UC9
+    usecase "Realizar Matrícula" as UC10
+    usecase "Cancelar Matrícula" as UC11
+    usecase "Consultar Minhas Matrículas" as UC12
+    
+    ' Casos de Uso do Professor
+    usecase "Consultar Alunos Matriculados" as UC13
+    usecase "Visualizar Disciplinas Lecionadas" as UC14
+    
+    ' Casos de Uso do Sistema
+    usecase "Verificar Capacidade de Turma" as UC15
+    usecase "Verificar Mínimo de Alunos" as UC16
+    usecase "Notificar Sistema de Cobranças" as UC17
+    usecase "Validar Período de Matrículas" as UC18
+    usecase "Validar Credenciais" as UC19
+}
+
+' Relacionamentos da Secretaria
+Secretaria --> UC1
+Secretaria --> UC2
+Secretaria --> UC3
+Secretaria --> UC4
+Secretaria --> UC5
+Secretaria --> UC6
+Secretaria --> UC7
+Secretaria --> UC8
+
+' Relacionamentos do Aluno
+Aluno --> UC8
+Aluno --> UC9
+Aluno --> UC10
+Aluno --> UC11
+Aluno --> UC12
+
+' Relacionamentos do Professor
+Professor --> UC8
+Professor --> UC13
+Professor --> UC14
+
+' Relacionamentos do Sistema de Cobranças
+Cobrancas <-- UC17
+
+' Relacionamentos de Inclusão (include)
+UC10 ..> UC15 : <<include>>
+UC10 ..> UC18 : <<include>>
+UC10 ..> UC19 : <<include>>
+UC11 ..> UC18 : <<include>>
+UC11 ..> UC19 : <<include>>
+UC10 ..> UC17 : <<include>>
+UC13 ..> UC19 : <<include>>
+UC14 ..> UC19 : <<include>>
+UC6 ..> UC7 : <<include>>
+UC16 ..> UC7 : <<include>>
+
+' Relacionamentos de Extensão (extend)
+UC9 <.. UC18 : <<extend>>
+UC12 <.. UC19 : <<extend>>
+
+' Notas explicativas
+note right of UC15 : "Verifica se há vagas\n(máximo 60 alunos)"
+note right of UC16 : "Verifica mínimo de 3 alunos\npara manter disciplina ativa"
+note right of UC17 : "Notifica cobrança após\nconfirmação de matrícula"
+note right of UC18 : "Verifica se está dentro\ndo período de matrículas"
+
+@enduml
