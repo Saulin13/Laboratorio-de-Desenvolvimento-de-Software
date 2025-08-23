@@ -1,0 +1,171 @@
+@startuml Sistema de Matrículas - Diagrama de Classes
+!theme plain
+skinparam class {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    ArrowColor DarkBlue
+}
+
+title Sistema de Matrículas Universitário - Diagrama de Classes
+
+' Classes principais
+class Usuario {
+    -String login
+    -String senha
+    -String nome
+    -String email
+    +fazerLogin(login: String, senha: String): boolean
+    +alterarSenha(novaSenha: String): void
+    +getNome(): String
+    +getEmail(): String
+}
+
+class Secretaria extends Usuario {
+    -String departamento
+    +gerenciarCursos(): void
+    +gerenciarDisciplinas(): void
+    +gerenciarAlunos(): void
+    +gerenciarProfessores(): void
+    +definirPeriodoMatriculas(dataInicio: Date, dataFim: Date): void
+    +gerarCurriculoSemestre(): void
+    +ativarDesativarDisciplina(disciplina: Disciplina, ativa: boolean): void
+}
+
+class Aluno extends Usuario {
+    -String matricula
+    -Curso curso
+    -List<Matricula> matriculas
+    -int creditosCursados
+    +realizarMatricula(disciplina: Disciplina, tipo: TipoMatricula): boolean
+    +cancelarMatricula(disciplina: Disciplina): boolean
+    +consultarMatriculas(): List<Matricula>
+    +getMatricula(): String
+    +getCurso(): Curso
+    +getCreditosCursados(): int
+}
+
+class Professor extends Usuario {
+    -String titulacao
+    -List<Disciplina> disciplinasLecionadas
+    +consultarAlunosMatriculados(disciplina: Disciplina): List<Aluno>
+    +visualizarDisciplinasLecionadas(): List<Disciplina>
+    +getTitulacao(): String
+}
+
+class Curso {
+    -String nome
+    -int creditos
+    -List<Disciplina> disciplinas
+    +adicionarDisciplina(disciplina: Disciplina): void
+    +removerDisciplina(disciplina: Disciplina): void
+    +getNome(): String
+    +getCreditos(): int
+    +getDisciplinas(): List<Disciplina>
+}
+
+class Disciplina {
+    -String codigo
+    -String nome
+    -int creditos
+    -Professor professor
+    -Curso curso
+    -boolean ativa
+    -int maxAlunos
+    -List<Matricula> matriculas
+    +adicionarMatricula(matricula: Matricula): boolean
+    +removerMatricula(matricula: Matricula): void
+    +verificarCapacidade(): boolean
+    +verificarMinimoAlunos(): boolean
+    +ativar(): void
+    +desativar(): void
+    +getCodigo(): String
+    +getNome(): String
+    +getCreditos(): int
+    +getProfessor(): Professor
+    +isAtiva(): boolean
+    +getMaxAlunos(): int
+    +getMatriculas(): List<Matricula>
+}
+
+class Matricula {
+    -Aluno aluno
+    -Disciplina disciplina
+    -TipoMatricula tipo
+    -Date dataMatricula
+    -boolean ativa
+    +cancelar(): void
+    +isAtiva(): boolean
+    +getAluno(): Aluno
+    +getDisciplina(): Disciplina
+    +getTipo(): TipoMatricula
+    +getDataMatricula(): Date
+}
+
+enum TipoMatricula {
+    OBRIGATORIA
+    OPTATIVA
+}
+
+class PeriodoMatriculas {
+    -Date dataInicio
+    -Date dataFim
+    -boolean ativo
+    +verificarPeriodoAtivo(): boolean
+    +ativar(): void
+    +desativar(): void
+    +getDataInicio(): Date
+    +getDataFim(): Date
+    +isAtivo(): boolean
+}
+
+class SistemaMatriculas {
+    -List<Usuario> usuarios
+    -List<Curso> cursos
+    -List<Disciplina> disciplinas
+    -PeriodoMatriculas periodoAtual
+    -SistemaCobrancas sistemaCobrancas
+    +validarCredenciais(login: String, senha: String): Usuario
+    +validarPeriodoMatriculas(): boolean
+    +notificarCobrancas(matricula: Matricula): void
+    +verificarCapacidadeTurma(disciplina: Disciplina): boolean
+    +verificarMinimoAlunos(disciplina: Disciplina): boolean
+    +getUsuarios(): List<Usuario>
+    +getCursos(): List<Curso>
+    +getDisciplinas(): List<Disciplina>
+    +getPeriodoAtual(): PeriodoMatriculas
+}
+
+class SistemaCobrancas {
+    +receberNotificacaoMatricula(matricula: Matricula): void
+    +gerarCobranca(aluno: Aluno, disciplinas: List<Disciplina>): void
+}
+
+' Relacionamentos
+SistemaMatriculas ||--o{ Usuario : gerencia
+SistemaMatriculas ||--o{ Curso : contém
+SistemaMatriculas ||--o{ Disciplina : contém
+SistemaMatriculas ||--o{ PeriodoMatriculas : controla
+SistemaMatriculas --> SistemaCobrancas : notifica
+
+Curso ||--o{ Disciplina : possui
+Curso ||--o{ Aluno : possui
+
+Disciplina ||--o{ Matricula : possui
+Disciplina }o--|| Professor : lecionada_por
+Disciplina }o--|| Curso : pertence_a
+
+Aluno ||--o{ Matricula : possui
+Aluno }o--|| Curso : pertence_a
+
+Professor ||--o{ Disciplina : leciona
+
+Matricula }o--|| Aluno : pertence_a
+Matricula }o--|| Disciplina : pertence_a
+Matricula }o--|| TipoMatricula : tem_tipo
+
+' Notas explicativas
+note right of Disciplina : "Máximo 60 alunos\nMínimo 3 alunos para ativação"
+note right of Aluno : "Máximo 4 obrigatórias\nMáximo 2 optativas"
+note right of Matricula : "Data de matrícula\nTipo (obrigatória/optativa)"
+
+@enduml
