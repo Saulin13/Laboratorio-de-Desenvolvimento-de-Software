@@ -19,7 +19,6 @@ public class MenuPrincipal {
             System.out.println("Período restaurado de arquivo: " + periodoRestaurado);
         }
 
-        
         System.out.println("\n=== Sistema de Matrículas ===");
         System.out.print("Login: ");
         String login = sc.nextLine();
@@ -37,16 +36,16 @@ public class MenuPrincipal {
         if (usuario instanceof Aluno) {
             Aluno aluno = (Aluno) usuario;
             menuAluno(sc, aluno, sistema);
-        
+
         } else if (usuario instanceof Professor) {
             Professor professor = (Professor) usuario;
             menuProfessor(sc, professor, sistema);
-        
+
         } else if (usuario instanceof Secretaria) {
             Secretaria secretaria = (Secretaria) usuario;
             menuSecretaria(sc, secretaria, sistema);
         }
-        
+
         salvarTudo(sistema);
     }
 
@@ -63,17 +62,17 @@ public class MenuPrincipal {
             int opcao = Integer.parseInt(sc.nextLine());
 
             switch (opcao) {
-                case 1 : {
+                case 1: {
                     for (Disciplina d : sistema.getDisciplinas()) {
                         System.out.println(d);
                     }
                 }
-                case 2 : {
+                case 2: {
                     if (!sistema.validarPeriodoMatriculas()) {
                         System.out.println("Período de matrículas fechado.");
                         break;
                     }
-                
+
                     System.out.print("Código da disciplina: ");
                     String cod = sc.nextLine().trim();
                     Disciplina d = sistema.buscarDisciplinaPorCodigo(cod);
@@ -81,17 +80,18 @@ public class MenuPrincipal {
                         System.out.println("Disciplina não encontrada.");
                         break;
                     }
-                
+
                     System.out.print("Tipo [1=OBRIGATORIA, 2=OPTATIVA]: ");
                     String t = sc.nextLine().trim();
                     TipoMatricula tipo = "2".equals(t) ? TipoMatricula.OPTATIVA : TipoMatricula.OBRIGATORIA;
-                
+
                     boolean ok = aluno.realizarMatricula(d, tipo);
                     if (ok) {
                         Matricula recem = null;
                         for (Matricula m : aluno.getMatriculas()) {
                             if (m.getDisciplina().equals(d) && m.isAtiva() && m.getTipo() == tipo) {
-                                recem = m; break;
+                                recem = m;
+                                break;
                             }
                         }
                         if (recem != null) {
@@ -101,8 +101,8 @@ public class MenuPrincipal {
                     } else {
                         System.out.println("Falhou (limites, capacidade ou período).");
                     }
-                }                
-                case 3 : {
+                }
+                case 3: {
                     System.out.print("Código da disciplina: ");
                     String cod = sc.nextLine();
                     Disciplina d = sistema.buscarDisciplinaPorCodigo(cod);
@@ -111,7 +111,9 @@ public class MenuPrincipal {
                         System.out.println(ok ? "Cancelado!" : "Não encontrado.");
                     }
                 }
-                case 0 : { return; }
+                case 0: {
+                    return;
+                }
             }
         }
     }
@@ -123,15 +125,15 @@ public class MenuPrincipal {
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
             int opcao = Integer.parseInt(sc.nextLine());
-    
+
             if (opcao == 1) {
                 for (Disciplina d : sistema.getDisciplinas()) {
                     if (d.getProfessor() != null &&
-                        d.getProfessor().getLogin() != null &&
-                        d.getProfessor().getLogin().equalsIgnoreCase(professor.getLogin())) {
-    
+                            d.getProfessor().getLogin() != null &&
+                            d.getProfessor().getLogin().equalsIgnoreCase(professor.getLogin())) {
+
                         System.out.println("\n" + d.getNome());
-    
+
                         List<Aluno> alunos = professor.consultarAlunosMatriculados(d);
                         if (alunos.isEmpty()) {
                             System.out.println("(sem alunos)");
@@ -147,7 +149,6 @@ public class MenuPrincipal {
             }
         }
     }
-    
 
     private static void menuSecretaria(Scanner sc, Secretaria secretaria, SistemaMatriculas sistema) {
         while (true) {
@@ -158,15 +159,15 @@ public class MenuPrincipal {
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
             int opcao = Integer.parseInt(sc.nextLine());
-    
+
             switch (opcao) {
-                case 1 : {
+                case 1: {
                     System.out.print("Dias até INÍCIO (ex 0): ");
                     int di = Integer.parseInt(sc.nextLine().trim());
                     System.out.print("Dias até FIM (ex 7): ");
                     int df = Integer.parseInt(sc.nextLine().trim());
                     Date inicio = new Date(System.currentTimeMillis() + di * 86400000L);
-                    Date fim    = new Date(System.currentTimeMillis() + df * 86400000L);
+                    Date fim = new Date(System.currentTimeMillis() + df * 86400000L);
                     PeriodoMatriculas p = new PeriodoMatriculas(inicio, fim);
                     sistema.definirPeriodoMatriculas(p);
                     p.ativar();
@@ -174,7 +175,7 @@ public class MenuPrincipal {
                     Banco.salvarPeriodo(p, "periodo.txt");
                     break;
                 }
-                case 2 : {
+                case 2: {
                     if (sistema.getPeriodoAtual() != null) {
                         sistema.getPeriodoAtual().desativar();
                         System.out.println("Matrículas FECHADAS.");
@@ -184,8 +185,8 @@ public class MenuPrincipal {
                     }
                     break;
                 }
-                case 3 : {
-                    sistema.finalizarPeriodoMatriculas();   
+                case 3: {
+                    sistema.finalizarPeriodoMatriculas();
                     PeriodoMatriculas pa = sistema.getPeriodoAtual();
                     if (pa != null) {
                         pa.desativar();
@@ -193,12 +194,15 @@ public class MenuPrincipal {
                     }
                     break;
                 }
-                case 0 : { return; }
-                default : { System.out.println("Opção inválida."); }
+                case 0: {
+                    return;
+                }
+                default: {
+                    System.out.println("Opção inválida.");
+                }
             }
         }
     }
-    
 
     // ================= CARREGAR DADOS =================
 
@@ -247,21 +251,21 @@ public class MenuPrincipal {
                 String discCodigo = p[1].trim();
                 String tipo = p[2].trim();
                 boolean ativa = Boolean.parseBoolean(p[3].trim());
-    
+
                 Aluno aluno = (Aluno) sistema.buscarUsuarioPorLogin(alunoLogin);
                 Disciplina disc = sistema.buscarDisciplinaPorCodigo(discCodigo);
                 if (aluno != null && disc != null) {
-                    TipoMatricula t = "OPTATIVA".equalsIgnoreCase(tipo) ? TipoMatricula.OPTATIVA : TipoMatricula.OBRIGATORIA;
+                    TipoMatricula t = "OPTATIVA".equalsIgnoreCase(tipo) ? TipoMatricula.OPTATIVA
+                            : TipoMatricula.OBRIGATORIA;
                     Matricula m = new Matricula(aluno, disc, t);
                     m.setAtiva(ativa);
-    
+
                     aluno.getMatriculas().add(m);
                     disc.getMatriculas().add(m);
                 }
             }
         }
     }
-    
 
     // ================= SALVAR DADOS =================
 
@@ -269,8 +273,7 @@ public class MenuPrincipal {
         // Usuários
         List<String> usuariosTxt = new ArrayList<>();
         for (Usuario u : sistema.getUsuarios()) {
-            String tipo = (u instanceof Aluno) ? "ALUNO" :
-                          (u instanceof Professor) ? "PROF" : "SEC";
+            String tipo = (u instanceof Aluno) ? "ALUNO" : (u instanceof Professor) ? "PROF" : "SEC";
             usuariosTxt.add(tipo + ";" + u.getLogin() + ";" + u.getSenha() + ";" + u.getNome() + ";" + u.getEmail());
         }
         Banco.salvarTxt(usuariosTxt, "usuarios.txt");
@@ -287,17 +290,16 @@ public class MenuPrincipal {
         List<String> matriculasTxt = new ArrayList<>();
         for (Usuario u : sistema.getUsuarios()) {
             if (u instanceof Aluno) {
-                Aluno aluno = (Aluno) u;  
+                Aluno aluno = (Aluno) u;
                 for (Matricula m : aluno.getMatriculas()) {
                     matriculasTxt.add(
-                        aluno.getLogin() + ";" +
-                        m.getDisciplina().getCodigo() + ";" +
-                        m.getTipo() + ";" +
-                        m.isAtiva()
-                    );
+                            aluno.getLogin() + ";" +
+                                    m.getDisciplina().getCodigo() + ";" +
+                                    m.getTipo() + ";" +
+                                    m.isAtiva());
                 }
             }
         }
-        Banco.salvarTxt(matriculasTxt, "matriculas.txt");  
+        Banco.salvarTxt(matriculasTxt, "matriculas.txt");
     }
 }

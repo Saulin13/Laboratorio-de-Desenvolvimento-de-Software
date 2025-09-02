@@ -1,128 +1,257 @@
-# Lab01S02 - Sistema de Matrículas Universitário
+# Lab01S03 - Sistema de Matrículas Universitário - IMPLEMENTAÇÃO COMPLETA
 
-## Descrição do Projeto
+## Descrição do Sistema
 
-Este projeto implementa o modelo estrutural (Diagrama de Classes) do Sistema de Matrículas Universitário desenvolvido em Java, contendo todas as classes, atributos e stubs dos métodos modelados.
+Uma universidade informatizou seu sistema de matrículas com as seguintes funcionalidades:
+
+- **Secretaria**: Gera o currículo para cada semestre e mantém informações sobre disciplinas, professores e alunos
+- **Cursos**: Cada curso tem nome, número de créditos e é constituído por diversas disciplinas
+- **Matrículas**: Alunos podem se matricular em 4 disciplinas obrigatórias e 2 optativas
+- **Períodos**: Há períodos específicos para efetuar matrículas
+- **Validações**: Disciplina só fica ativa com mínimo de 3 alunos, máximo de 60 alunos
+- **Cobranças**: Sistema de cobranças é notificado automaticamente após matrículas
+- **Acesso**: Professores podem consultar alunos matriculados em suas disciplinas
+- **Segurança**: Todos os usuários têm senhas para validação de login
 
 ## Estrutura do Projeto
 
 ```
 src/main/java/sistema/
-├── Usuario.java              # Classe base abstrata para todos os usuários
-├── Secretaria.java           # Classe que representa a Secretaria da Universidade
-├── Professor.java            # Classe que representa um Professor
-├── Aluno.java               # Classe que representa um Aluno
-├── Curso.java               # Classe que representa um Curso
-├── Disciplina.java          # Classe que representa uma Disciplina
-├── Matricula.java           # Classe que representa uma Matrícula
-├── TipoMatricula.java       # Enum para tipos de matrícula (OBRIGATORIA/OPTATIVA)
-├── PeriodoMatriculas.java   # Classe que representa um Período de Matrículas
-├── SistemaCobrancas.java    # Classe que representa o Sistema de Cobranças
-└── SistemaMatriculas.java   # Classe principal do sistema
+├── MenuPrincipal.java           # Interface de usuário completa
+├── Usuario.java                 # Classe base abstrata para todos os usuários
+├── Secretaria.java              # Gerenciamento de cursos, disciplinas e períodos
+├── Professor.java               # Consulta de alunos matriculados
+├── Aluno.java                   # Realização e cancelamento de matrículas
+├── Curso.java                   # Representação de curso com disciplinas
+├── Disciplina.java              # Gerenciamento de matrículas e capacidades
+├── Matricula.java               # Representação de matrícula aluno-disciplina
+├── TipoMatricula.java           # Enum para tipos de matrícula
+├── PeriodoMatriculas.java       # Controle de períodos de matrícula
+├── SistemaCobrancas.java        # Processamento de notificações e cobranças
+├── SistemaMatriculas.java       # Coordenação central do sistema
+└── Banco.java                   # Persistência em arquivos de texto
+
+Arquivos de dados:
+├── usuarios.txt                 # Usuários do sistema (ALUNO, PROF, SEC)
+├── disciplinas.txt              # Disciplinas disponíveis
+├── matriculas.txt               # Matrículas dos alunos
+└── periodo.txt                  # Período de matrículas (persistido)
 ```
 
-## Classes e Responsabilidades
+## Funcionalidades Implementadas
 
-### 1. Usuario (Classe Abstrata)
-- **Responsabilidade**: Classe base para todos os usuários do sistema
-- **Atributos**: login, senha, nome, email
-- **Métodos**: fazerLogin(), alterarSenha(), getters e setters
+### **Interface de Usuário Completa (MenuPrincipal)**
 
-### 2. Secretaria (Herda de Usuario)
-- **Responsabilidade**: Gerenciar cursos, disciplinas, alunos e períodos de matrícula
-- **Atributos**: departamento
-- **Métodos**: gerenciarCursos(), gerenciarDisciplinas(), gerenciarAlunos(), etc.
+#### **Sistema de Login**
 
-### 3. Professor (Herda de Usuario)
-- **Responsabilidade**: Consultar alunos matriculados e disciplinas lecionadas
-- **Atributos**: titulacao, disciplinasLecionadas
-- **Métodos**: consultarAlunosMatriculados(), visualizarDisciplinasLecionadas()
+- Validação de credenciais para todos os tipos de usuário
+- Carregamento automático de dados ao iniciar
+- Persistência automática ao sair
 
-### 4. Aluno (Herda de Usuario)
-- **Responsabilidade**: Realizar e cancelar matrículas, consultar matrículas
-- **Atributos**: matricula, curso, matriculas, creditosCursados
-- **Métodos**: realizarMatricula(), cancelarMatricula(), consultarMatriculas()
+#### **Menu do Aluno**
 
-### 5. Curso
-- **Responsabilidade**: Representar um curso com suas disciplinas e alunos
-- **Atributos**: nome, creditos, disciplinas, alunos
-- **Métodos**: adicionarDisciplina(), removerDisciplina(), adicionarAluno()
+- **Listar disciplinas**: Visualizar todas as disciplinas disponíveis
+- **Matricular-se**: Realizar matrícula em disciplina (com validações)
+- **Cancelar matrícula**: Cancelar matrícula existente
 
-### 6. Disciplina
-- **Responsabilidade**: Gerenciar matrículas e verificar capacidades
-- **Atributos**: codigo, nome, creditos, professor, curso, ativa, maxAlunos, matriculas
-- **Métodos**: adicionarMatricula(), verificarCapacidade(), verificarMinimoAlunos()
+#### **Menu do Professor**
 
-### 7. Matricula
-- **Responsabilidade**: Representar uma matrícula de aluno em disciplina
-- **Atributos**: aluno, disciplina, tipo, dataMatricula, ativa
-- **Métodos**: cancelar(), isAtiva()
+- **Minhas disciplinas e alunos**: Consultar alunos matriculados em suas disciplinas
 
-### 8. TipoMatricula (Enum)
-- **Valores**: OBRIGATORIA, OPTATIVA
+#### **Menu da Secretaria**
 
-### 9. PeriodoMatriculas
-- **Responsabilidade**: Controlar períodos de matrícula
-- **Atributos**: dataInicio, dataFim, ativo
-- **Métodos**: verificarPeriodoAtivo(), ativar(), desativar()
+- **Criar & abrir período**: Definir e ativar período de matrículas
+- **Fechar período**: Desativar período de matrículas
+- **Finalizar período**: Ativar disciplinas com ≥3 alunos, cancelar demais
 
-### 10. SistemaCobrancas
-- **Responsabilidade**: Processar notificações de matrícula e gerar cobranças
-- **Métodos**: receberNotificacaoMatricula(), gerarCobranca(), processarPagamento()
+### **Sistema de Autenticação**
 
-### 11. SistemaMatriculas (Classe Principal)
-- **Responsabilidade**: Coordenar todas as operações do sistema
-- **Atributos**: usuarios, cursos, disciplinas, periodoAtual, sistemaCobrancas
-- **Métodos**: validarCredenciais(), validarPeriodoMatriculas(), notificarCobrancas()
+- Validação de login e senha para todos os usuários
+- Diferentes níveis de acesso por tipo de usuário
+- Sessão persistente durante execução
+
+### **Persistência de Dados**
+
+- **Carregamento automático**: Usuários, disciplinas e matrículas ao iniciar
+- **Salvamento automático**: Todos os dados ao sair do sistema
+- **Arquivos de dados**:
+  - `usuarios.txt`: Tipos, logins, senhas, nomes e emails
+  - `disciplinas.txt`: Códigos, nomes, créditos e professores
+  - `matriculas.txt`: Alunos, disciplinas, tipos e status
+  - `periodo.txt`: Datas de início/fim e status ativo
+
+### **Validações e Regras de Negócio**
+
+- **Limite de matrículas**: Máximo 4 obrigatórias + 2 optativas por aluno
+- **Capacidade de turma**: Máximo 60 alunos por disciplina
+- **Disciplina ativa**: Mínimo 3 alunos para manter disciplina ativa
+- **Período de matrículas**: Controle de acesso por período definido
+- **Validação de login**: Senhas obrigatórias para todos os usuários
+- **Notificação automática**: Sistema de cobranças notificado após matrículas
+
+## Usuários de Teste
+
+### **Alunos**
+
+- **aluno1** (Maria Aluna) - senha: 123
+- **aluno2** (João Aluno) - senha: 123
+- **aluno3** (Carla Aluna) - senha: 123
+
+### **Professor**
+
+- **prof1** (Ana Prof) - senha: 123
+
+### **Secretaria**
+
+- **sec1** (Secretaria) - senha: 123
+
+## Como Executar o Sistema
+
+### **Requisitos**
+
+- JDK 17 ou superior (compatível com JDK 8+)
+- Sistema operacional: Windows, Linux ou macOS
+
+### **Compilação**
+
+```bash
+# Navegar para o diretório da implementação
+cd Implementacao
+
+# Compilar todas as classes
+javac -d bin src/main/java/sistema/*.java
+
+# Ou compilar individualmente
+javac -d bin src/main/java/sistema/Usuario.java
+javac -d bin src/main/java/sistema/Aluno.java
+javac -d bin src/main/java/sistema/Professor.java
+javac -d bin src/main/java/sistema/Secretaria.java
+javac -d bin src/main/java/sistema/Disciplina.java
+javac -d bin src/main/java/sistema/Matricula.java
+javac -d bin src/main/java/sistema/PeriodoMatriculas.java
+javac -d bin src/main/java/sistema/SistemaMatriculas.java
+javac -d bin src/main/java/sistema/SistemaCobrancas.java
+javac -d bin src/main/java/sistema/Banco.java
+javac -d bin src/main/java/sistema/MenuPrincipal.java
+```
+
+### **Execução**
+
+```bash
+# Executar o sistema principal
+java -cp bin sistema.MenuPrincipal
+
+# Ou executar a classe principal diretamente
+java -cp bin sistema.MenuPrincipal
+```
+
+### **Fluxo de Uso**
+
+1. **Inicialização**: Sistema carrega dados automaticamente
+2. **Login**: Digite login e senha de um usuário de teste
+3. **Menu específico**: Acesso às funcionalidades do tipo de usuário
+4. **Operações**: Realize as operações disponíveis no menu
+5. **Saída**: Sistema salva automaticamente todos os dados
+
+## Arquitetura do Sistema
+
+### **Camadas Implementadas**
+
+- **Apresentação**: `MenuPrincipal` (interface de usuário completa)
+- **Serviços**: `SistemaMatriculas`, `SistemaCobrancas`
+- **Domínio**: `Aluno`, `Professor`, `Disciplina`, `Matricula`, `PeriodoMatriculas`
+- **Persistência**: `Banco` (leitura/escrita de arquivos)
+
+### **Padrões de Design**
+
+- **MVC**: Separação entre interface, lógica de negócio e dados
+- **Singleton**: Sistema centralizado de matrículas
+- **Factory**: Criação de usuários por tipo
+- **Observer**: Notificação automática de cobranças
+
+## Funcionalidades por Tipo de Usuário
+
+### **👨‍🎓 Aluno**
+
+- ✅ Visualizar disciplinas disponíveis
+- ✅ Realizar matrícula em disciplina
+- ✅ Cancelar matrícula existente
+- ✅ Consultar suas matrículas ativas
+- ✅ Validação de limites de matrícula
+
+### **👨‍🏫 Professor**
+
+- ✅ Visualizar disciplinas que leciona
+- ✅ Consultar alunos matriculados
+- ✅ Acesso apenas às suas disciplinas
+
+### **👩‍💼 Secretaria**
+
+- ✅ Criar e abrir período de matrículas
+- ✅ Fechar período de matrículas
+- ✅ Finalizar período (ativar/cancelar disciplinas)
+- ✅ Gerenciar configurações do sistema
 
 ## Regras de Negócio Implementadas
 
-1. **Limite de Matrículas**: Alunos podem se matricular em até 4 disciplinas obrigatórias e 2 optativas
-2. **Capacidade de Turma**: Máximo de 60 alunos por disciplina
-3. **Disciplina Ativa**: Mínimo de 3 alunos para manter disciplina ativa
-4. **Período de Matrículas**: Controle de acesso por período definido
-5. **Validação de Login**: Todos os usuários devem ter senhas válidas
-6. **Notificação de Cobrança**: Sistema deve notificar cobranças automaticamente
+### **Matrículas**
 
-## Relacionamentos entre Classes
+- **Limite por aluno**: Máximo 4 disciplinas obrigatórias + 2 optativas
+- **Capacidade de turma**: Máximo 60 alunos por disciplina
+- **Disciplina ativa**: Mínimo 3 alunos para manter ativa
+- **Período de matrículas**: Controle de acesso por período
 
-- **SistemaMatriculas** gerencia **Usuario**, **Curso**, **Disciplina**, **PeriodoMatriculas**
-- **SistemaMatriculas** notifica **SistemaCobrancas**
-- **Curso** possui **Disciplina** e **Aluno**
-- **Disciplina** possui **Matricula** e é lecionada por **Professor**
-- **Aluno** possui **Matricula** e pertence a **Curso**
-- **Professor** leciona **Disciplina**
-- **Matricula** pertence a **Aluno** e **Disciplina**, tem **TipoMatricula**
+### **Validações**
+
+- **Login obrigatório**: Todos os usuários devem se autenticar
+- **Período ativo**: Matrículas só podem ser feitas em período aberto
+- **Capacidade**: Verificação de vagas disponíveis
+- **Limites**: Controle de número máximo de matrículas por aluno
+
+### **Persistência**
+
+- **Carregamento automático**: Dados restaurados ao iniciar
+- **Salvamento automático**: Estado persistido ao sair
+- **Arquivos de dados**: Formato CSV simples e legível
+- **Período persistido**: Configuração mantida entre execuções
 
 ## Status da Implementação
 
-- ✅ **Classes criadas** com todos os atributos definidos
-- ✅ **Stubs dos métodos** implementados com comentários TODO
-- ✅ **Relacionamentos** entre classes estabelecidos
-- ✅ **Documentação** completa com JavaDoc
-- ⏳ **Implementação completa** dos métodos (próxima sprint)
+### **✅ COMPLETAMENTE IMPLEMENTADO (Lab01S03)**
 
-## Próximos Passos (Lab01S03)
+- ✅ **Interface de usuário** completa via MenuPrincipal
+- ✅ **Sistema de autenticação** funcional
+- ✅ **Todas as funcionalidades** implementadas e testadas
+- ✅ **Persistência de dados** em arquivos funcionando
+- ✅ **Validações de regras** de negócio implementadas
+- ✅ **Tratamento de erros** e validações
+- ✅ **Sistema executável** e funcional
+- ✅ **Documentação** completa e atualizada
 
-1. Implementar a lógica completa dos métodos marcados com TODO
-2. Criar interface de usuário (linha de comando)
-3. Implementar persistência em arquivos
-4. Testar todas as funcionalidades do sistema
-5. Validar regras de negócio implementadas
+### **Funcionalidades Principais**
 
-## Como Compilar e Executar
+- ✅ Login e autenticação de usuários
+- ✅ Matrícula e cancelamento de disciplinas
+- ✅ Consulta de alunos e disciplinas
+- ✅ Gerenciamento de períodos de matrícula
+- ✅ Validação de regras de negócio
+- ✅ Persistência automática de dados
+- ✅ Interface de usuário intuitiva
 
-```bash
-# Compilar o projeto
-javac -d bin src/main/java/sistema/*.java
+## Testes e Validação
 
-# Executar (quando implementado)
-java -cp bin sistema.SistemaMatriculas
-```
+### **Cenários Testados**
 
-## Observações
+1. **Login de usuários**: Todos os tipos funcionando
+2. **Matrícula de alunos**: Validações de limite e capacidade
+3. **Cancelamento**: Remoção de matrículas existentes
+4. **Períodos**: Criação, abertura e fechamento
+5. **Persistência**: Carregamento e salvamento de dados
+6. **Validações**: Regras de negócio aplicadas corretamente
 
-- Todos os métodos estão implementados como stubs com comentários TODO
-- A estrutura está pronta para a implementação completa na próxima sprint
-- O modelo segue fielmente o diagrama de classes criado
-- As regras de negócio estão refletidas na estrutura das classes
+### **Arquivos de Dados**
+
+- **usuarios.txt**: Usuários de teste configurados
+- **disciplinas.txt**: 5 disciplinas de exemplo
+- **matriculas.txt**: Matrículas de teste
+- **periodo.txt**: Período de matrículas persistido

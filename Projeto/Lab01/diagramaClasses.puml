@@ -18,6 +18,8 @@ class Usuario {
     +alterarSenha(novaSenha: String): void
     +getNome(): String
     +getEmail(): String
+    +getLogin(): String
+    +getSenha(): String
 }
 
 class Secretaria extends Usuario {
@@ -29,6 +31,7 @@ class Secretaria extends Usuario {
     +definirPeriodoMatriculas(dataInicio: Date, dataFim: Date): void
     +gerarCurriculoSemestre(): void
     +ativarDesativarDisciplina(disciplina: Disciplina, ativa: boolean): void
+    +getDepartamento(): String
 }
 
 class Aluno extends Usuario {
@@ -42,6 +45,8 @@ class Aluno extends Usuario {
     +getMatricula(): String
     +getCurso(): Curso
     +getCreditosCursados(): int
+    +getMatriculas(): List<Matricula>
+    +setMatriculas(List<Matricula>): void
 }
 
 class Professor extends Usuario {
@@ -50,17 +55,21 @@ class Professor extends Usuario {
     +consultarAlunosMatriculados(disciplina: Disciplina): List<Aluno>
     +visualizarDisciplinasLecionadas(): List<Disciplina>
     +getTitulacao(): String
+    +getDisciplinasLecionadas(): List<Disciplina>
 }
 
 class Curso {
     -String nome
     -int creditos
     -List<Disciplina> disciplinas
+    -List<Aluno> alunos
     +adicionarDisciplina(disciplina: Disciplina): void
     +removerDisciplina(disciplina: Disciplina): void
+    +adicionarAluno(aluno: Aluno): void
     +getNome(): String
     +getCreditos(): int
     +getDisciplinas(): List<Disciplina>
+    +getAlunos(): List<Aluno>
 }
 
 class Disciplina {
@@ -85,6 +94,8 @@ class Disciplina {
     +isAtiva(): boolean
     +getMaxAlunos(): int
     +getMatriculas(): List<Matricula>
+    +setProfessor(professor: Professor): void
+    +setAtiva(ativa: boolean): void
 }
 
 class Matricula {
@@ -99,6 +110,7 @@ class Matricula {
     +getDisciplina(): Disciplina
     +getTipo(): TipoMatricula
     +getDataMatricula(): Date
+    +setAtiva(ativa: boolean): void
 }
 
 enum TipoMatricula {
@@ -116,6 +128,7 @@ class PeriodoMatriculas {
     +getDataInicio(): Date
     +getDataFim(): Date
     +isAtivo(): boolean
+    +toString(): String
 }
 
 class SistemaMatriculas {
@@ -129,10 +142,19 @@ class SistemaMatriculas {
     +notificarCobrancas(matricula: Matricula): void
     +verificarCapacidadeTurma(disciplina: Disciplina): boolean
     +verificarMinimoAlunos(disciplina: Disciplina): boolean
+    +adicionarUsuario(usuario: Usuario): void
+    +adicionarCurso(curso: Curso): void
+    +adicionarDisciplina(disciplina: Disciplina): void
+    +definirPeriodoMatriculas(periodo: PeriodoMatriculas): void
+    +finalizarPeriodoMatriculas(): void
+    +buscarUsuarioPorLogin(login: String): Usuario
+    +buscarCursoPorNome(nome: String): Curso
+    +buscarDisciplinaPorCodigo(codigo: String): Disciplina
     +getUsuarios(): List<Usuario>
     +getCursos(): List<Curso>
     +getDisciplinas(): List<Disciplina>
     +getPeriodoAtual(): PeriodoMatriculas
+    +getSistemaCobrancas(): SistemaCobrancas
 }
 
 class SistemaCobrancas {
@@ -140,12 +162,36 @@ class SistemaCobrancas {
     +gerarCobranca(aluno: Aluno, disciplinas: List<Disciplina>): void
 }
 
+class Banco {
+    +salvarTxt(dados: List<String>, nomeArquivo: String): void
+    +carregarTxt(nomeArquivo: String): List<String>
+    +salvarPeriodo(periodo: PeriodoMatriculas, nomeArquivo: String): void
+    +carregarPeriodo(nomeArquivo: String): PeriodoMatriculas
+    -resolvePath(nomeArquivo: String): Path
+}
+
+class MenuPrincipal {
+    +main(args: String[]): void
+    -menuAluno(sc: Scanner, aluno: Aluno, sistema: SistemaMatriculas): void
+    -menuProfessor(sc: Scanner, professor: Professor, sistema: SistemaMatriculas): void
+    -menuSecretaria(sc: Scanner, secretaria: Secretaria, sistema: SistemaMatriculas): void
+    -carregarUsuarios(sistema: SistemaMatriculas): void
+    -carregarDisciplinas(sistema: SistemaMatriculas): void
+    -carregarMatriculas(sistema: SistemaMatriculas): void
+    -salvarTudo(sistema: SistemaMatriculas): void
+}
+
 ' Relacionamentos
+MenuPrincipal --> SistemaMatriculas : usa
+MenuPrincipal --> Banco : usa
+
 SistemaMatriculas ||--o{ Usuario : gerencia
 SistemaMatriculas ||--o{ Curso : contém
 SistemaMatriculas ||--o{ Disciplina : contém
 SistemaMatriculas ||--o{ PeriodoMatriculas : controla
 SistemaMatriculas --> SistemaCobrancas : notifica
+
+Banco --> PeriodoMatriculas : persiste
 
 Curso ||--o{ Disciplina : possui
 Curso ||--o{ Aluno : possui
@@ -167,5 +213,7 @@ Matricula }o--|| TipoMatricula : tem_tipo
 note right of Disciplina : "Máximo 60 alunos\nMínimo 3 alunos para ativação"
 note right of Aluno : "Máximo 4 obrigatórias\nMáximo 2 optativas"
 note right of Matricula : "Data de matrícula\nTipo (obrigatória/optativa)"
+note right of Banco : "Persistência em arquivos\nusuarios.txt, disciplinas.txt\nmatriculas.txt, periodo.txt"
+note right of MenuPrincipal : "Interface de usuário\ncompleta implementada"
 
 @enduml

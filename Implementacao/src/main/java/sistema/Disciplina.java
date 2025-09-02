@@ -109,9 +109,9 @@ public class Disciplina {
     }
     
     public List<Matricula> getMatriculas() {
-        return new ArrayList<>(matriculas);
+        return matriculas;
     }
-    
+
     public int getNumeroAlunos() {
         return matriculas.size();
     }
