@@ -14,7 +14,13 @@ public class Professor extends Usuario {
     }
     
     public List<Aluno> consultarAlunosMatriculados(Disciplina disciplina) {
-        return new ArrayList<>();
+        List<Aluno> alunos = new ArrayList<>();
+        for (Matricula m : disciplina.getMatriculas()) {
+            if (m.isAtiva()) {
+                alunos.add(m.getAluno());
+            }
+        }
+        return alunos;
     }
     
     public List<Disciplina> visualizarDisciplinasLecionadas() {

@@ -1,0 +1,5 @@
+ALUNO;aluno1;123;Maria Aluna;aluno1@teste.com
+ALUNO;aluno2;123;João Aluno;aluno2@teste.com
+ALUNO;aluno3;123;Carla Aluna;aluno3@teste.com
+PROF;prof1;123;Ana Prof;prof1@teste.com
+SEC;sec1;123;Secretaria;sec1@teste.com

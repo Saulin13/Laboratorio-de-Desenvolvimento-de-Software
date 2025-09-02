@@ -18,18 +18,38 @@ public class Aluno extends Usuario {
     }
     
     public boolean realizarMatricula(Disciplina disciplina, TipoMatricula tipo) {
-        if (disciplina != null && !jaMatriculado(disciplina)) {
-            Matricula novaMatricula = new Matricula(this, disciplina, tipo);
-            matriculas.add(novaMatricula);
-            return true;
+        if (disciplina == null || jaMatriculado(disciplina)) {
+            return false;
         }
-        return false;
+    
+        long obrigatorias = matriculas.stream()
+                .filter(m -> m.getTipo() == TipoMatricula.OBRIGATORIA && m.isAtiva())
+                .count();
+        long optativas = matriculas.stream()
+                .filter(m -> m.getTipo() == TipoMatricula.OPTATIVA && m.isAtiva())
+                .count();
+    
+        if (tipo == TipoMatricula.OBRIGATORIA && obrigatorias >= 4) return false;
+        if (tipo == TipoMatricula.OPTATIVA && optativas >= 2) return false;
+    
+        if (!disciplina.verificarCapacidade()) return false;
+    
+        Matricula nova = new Matricula(this, disciplina, tipo);
+        matriculas.add(nova);
+        disciplina.adicionarMatricula(nova);
+        return true;
     }
     
+    private boolean jaMatriculado(Disciplina disciplina) {
+        return matriculas.stream()
+                .anyMatch(m -> m.getDisciplina().equals(disciplina) && m.isAtiva());
+    }
+    
+    
     public boolean cancelarMatricula(Disciplina disciplina) {
-        for (Matricula matricula : matriculas) {
-            if (matricula.getDisciplina().equals(disciplina) && matricula.isAtiva()) {
-                matricula.cancelar();
+        for (Matricula m : matriculas) {
+            if (m.getDisciplina().equals(disciplina) && m.isAtiva()) {
+                m.cancelar();
                 return true;
             }
         }
@@ -44,15 +64,6 @@ public class Aluno extends Usuario {
             }
         }
         return matriculasAtivas;
-    }
-    
-    public boolean jaMatriculado(Disciplina disciplina) {
-        for (Matricula matricula : matriculas) {
-            if (matricula.getDisciplina().equals(disciplina) && matricula.isAtiva()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     public int contarMatriculasPorTipo(TipoMatricula tipo) {

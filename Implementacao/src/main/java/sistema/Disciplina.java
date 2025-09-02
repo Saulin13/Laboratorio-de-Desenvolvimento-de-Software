@@ -40,8 +40,9 @@ public class Disciplina {
     }
     
     public boolean verificarMinimoAlunos() {
-        return matriculas.size() >= 3;
+        return matriculas.stream().filter(Matricula::isAtiva).count() >= 3;
     }
+    
     
     public void ativar() {
         this.ativa = true;

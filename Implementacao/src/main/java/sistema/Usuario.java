@@ -16,8 +16,8 @@ public abstract class Usuario {
     }
     
     public boolean fazerLogin(String login, String senha) {
-        return false;
-    }
+        return this.login.equals(login) && this.senha.equals(senha);
+    }    
     
     public void alterarSenha(String novaSenha) {
     }

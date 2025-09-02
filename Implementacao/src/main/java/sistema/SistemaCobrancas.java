@@ -14,9 +14,13 @@ public class SistemaCobrancas {
     }
     
     public void gerarCobranca(Aluno aluno, List<Disciplina> disciplinas) {
-        if (aluno != null && disciplinas != null && !disciplinas.isEmpty()) {
+        double valorTotal = 0.0;
+        for (Disciplina d : disciplinas) {
+            valorTotal += d.getCreditos() * 150.0; 
         }
+        System.out.println("Cobrança gerada para " + aluno.getNome() + ": R$" + valorTotal);
     }
+    
     
     public boolean processarPagamento(Aluno aluno, double valor) {
         return false;

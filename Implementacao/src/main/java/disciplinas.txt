@@ -1,0 +1,5 @@
+ES101;Engenharia de Software I;4;prof1
+ES102;Engenharia de Software II;4;prof1
+BD101;Banco de Dados;4;prof1
+ALGO1;Algoritmos I;4;prof1
+REDES1;Redes de Computadores I;4;prof1

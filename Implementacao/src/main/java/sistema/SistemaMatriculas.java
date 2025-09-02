@@ -19,12 +19,13 @@ public class SistemaMatriculas {
     
     public Usuario validarCredenciais(String login, String senha) {
         for (Usuario usuario : usuarios) {
-            if (usuario.getLogin().equals(login) && usuario.getSenha().equals(senha)) {
+            if (usuario.fazerLogin(login, senha)) {
                 return usuario;
             }
         }
         return null;
     }
+    
     
     public boolean validarPeriodoMatriculas() {
         if (periodoAtual == null) {
@@ -121,4 +122,17 @@ public class SistemaMatriculas {
         }
         return null;
     }
+
+    public void finalizarPeriodoMatriculas() {
+        if (periodoAtual == null) return;
+        for (Disciplina d : disciplinas) {
+            if (!d.verificarMinimoAlunos()) {
+                d.setAtiva(false);
+                System.out.println("Disciplina cancelada: " + d.getNome());
+            }
+        }
+        periodoAtual.desativar();
+        System.out.println("Período de matrículas finalizado.");
+    }
+    
 }
